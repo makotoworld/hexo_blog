@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>音声文字変換の調査メモ | コードを舐める日々</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="参考文献 https:&#x2F;&#x2F;qiita.com&#x2F;ysugiyama12&#x2F;items&#x2F;bf246e80ae4d1dc16441#%E3%81%8D%E3%81%A3%E3%81%8B%E3%81%91 ２つの音声文字変換APIがあるので、どっちが精度良くて、便利か検証してみた Google Cloud Cloud Speech-to-text https:&#x2F;&#x2F;cloud.google.com&#x2F;spee">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音声文字変換の調査メモ">
+<meta property="og:url" content="https://makotoworld.github.io/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/index.html">
+<meta property="og:site_name" content="コードを舐める日々">
+<meta property="og:description" content="参考文献 https:&#x2F;&#x2F;qiita.com&#x2F;ysugiyama12&#x2F;items&#x2F;bf246e80ae4d1dc16441#%E3%81%8D%E3%81%A3%E3%81%8B%E3%81%91 ２つの音声文字変換APIがあるので、どっちが精度良くて、便利か検証してみた Google Cloud Cloud Speech-to-text https:&#x2F;&#x2F;cloud.google.com&#x2F;spee">
+<meta property="article:published_time" content="2020-03-11T14:15:17.000Z">
+<meta property="article:modified_time" content="2020-03-11T14:22:25.126Z">
+<meta property="article:author" content="Makoto Nozaki">
+<meta property="article:tag" content="my">
+<meta property="article:tag" content="idea">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/makotoworld.github.io/atom.xml" title="コードを舐める日々" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/makotoworld.github.io/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/makotoworld.github.io/" id="logo">コードを舐める日々</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/makotoworld.github.io/" id="subtitle">わからないことがわからないことをしる日々</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/makotoworld.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/makotoworld.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/makotoworld.github.io/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://makotoworld.github.io/makotoworld.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-音声文字変換の調査メモ" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/" class="article-date">
+  <time datetime="2020-03-11T14:15:17.000Z" itemprop="datePublished">2020-03-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      音声文字変換の調査メモ
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://qiita.com/ysugiyama12/items/bf246e80ae4d1dc16441#%E3%81%8D%E3%81%A3%E3%81%8B%E3%81%91" target="_blank" rel="noopener">https://qiita.com/ysugiyama12/items/bf246e80ae4d1dc16441#%E3%81%8D%E3%81%A3%E3%81%8B%E3%81%91</a></li>
+<li>２つの音声文字変換APIがあるので、どっちが精度良くて、便利か検証してみた</li>
+<li>Google Cloud Cloud Speech-to-text<ul>
+<li><a href="https://cloud.google.com/speech-to-text?hl=ja" target="_blank" rel="noopener">https://cloud.google.com/speech-to-text?hl=ja</a></li>
+</ul>
+</li>
+<li>Amazon transcribe<ul>
+<li><a href="https://aws.amazon.com/jp/transcribe/" target="_blank" rel="noopener">https://aws.amazon.com/jp/transcribe/</a></li>
+<li><a href="https://us-east-2.console.aws.amazon.com/transcribe/home?region=us-east-2#jobs" target="_blank" rel="noopener">https://us-east-2.console.aws.amazon.com/transcribe/home?region=us-east-2#jobs</a></li>
+<li><a href="https://qiita.com/ysugiyama12/items/bf246e80ae4d1dc16441#%E6%96%87%E5%AD%97%E8%B5%B7%E3%81%93%E3%81%97%E7%B5%90%E6%9E%9C%E3%82%92%E6%AF%94%E8%BC%83%E3%81%97%E3%81%A6%E3%81%BF%E3%82%88%E3%81%86" target="_blank" rel="noopener">https://qiita.com/ysugiyama12/items/bf246e80ae4d1dc16441#%E6%96%87%E5%AD%97%E8%B5%B7%E3%81%93%E3%81%97%E7%B5%90%E6%9E%9C%E3%82%92%E6%AF%94%E8%BC%83%E3%81%97%E3%81%A6%E3%81%BF%E3%82%88%E3%81%86</a></li>
+<li><a href="https://892copy.jp/japanese-ok-amazon-transcribe-mojiokoshi/" target="_blank" rel="noopener">https://892copy.jp/japanese-ok-amazon-transcribe-mojiokoshi/</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h2><ul>
+<li>Google Cloud Cloud Speech-to-text<ul>
+<li><a href="https://cloud.google.com/speech-to-text?hl=ja" target="_blank" rel="noopener">https://cloud.google.com/speech-to-text?hl=ja</a></li>
+</ul>
+</li>
+<li>Amazon transcribe<ul>
+<li><a href="https://aws.amazon.com/jp/transcribe/" target="_blank" rel="noopener">https://aws.amazon.com/jp/transcribe/</a></li>
+</ul>
+</li>
+<li>他もある<ul>
+<li>IBM</li>
+<li>Microsoft</li>
+</ul>
+</li>
+</ul>
+<h2 id="音源ファイル"><a href="#音源ファイル" class="headerlink" title="音源ファイル"></a>音源ファイル</h2><ul>
+<li>検証プロセス<ul>
+<li>音源ファイルを入手する</li>
+<li>音声文字変換サービスに音源ファイルを読み込み、文字を起こす</li>
+<li>文字起こしした結果の精度を確認する</li>
+</ul>
+</li>
+<li>音源ファイル<ul>
+<li>音が含まれたファイルのことを、音源、音声、音楽等、色んな言い方がある</li>
+<li>ここでは「音源」と表現する</li>
+<li>音源ファイルの種類<ul>
+<li>非圧縮形式</li>
+<li>非可逆圧縮形式</li>
+<li>可逆圧縮形式</li>
+<li>人間が聞き取れる音は20Hz～20000Hzらしい</li>
+</ul>
+</li>
+<li>音源ファイルの形式<ul>
+<li>mp3、FLAC、ALAC、AAC、VMA</li>
+</ul>
+</li>
+<li>チャンネル数は？<ul>
+<li>音がどの方向から聴こえてくるのかなど、音に空間的な広がりを持たせるためには、複数の音波発生源が必要。</li>
+<li>音波発生源の数をチャンネル数と言う。</li>
+<li>マイクや昔のラジオなどはモノラル(1チャンネル）、CDや一般的なオーディオはステレオ(2チャンネル)です。ホームシアターなどでは臨場感を表現するために5.1チャンネルなど多くのチャンネルが使われている。</li>
+<li>Googleは複数チャンネルの音声文字変換が可能</li>
+<li>Amazonは１チャンネルのみ（複数音声の変換も可能で、時系列に書き出せるらしいが１つの音声として認識されたした形で出力される</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="ストリーミング"><a href="#ストリーミング" class="headerlink" title="ストリーミング"></a>ストリーミング</h2><ul>
+<li>リアルタイムで文字変換</li>
+<li>会議中だとこのAPIが適している</li>
+<li>Google<ul>
+<li><a href="https://cloud.google.com/speech-to-text/docs/streaming-recognize?hl=ja#speech-streaming-recognize-python" target="_blank" rel="noopener">https://cloud.google.com/speech-to-text/docs/streaming-recognize?hl=ja#speech-streaming-recognize-python</a></li>
+<li>en-US -&gt; ja-JP に変えると日本語として読み込める</li>
+<li>話者ダイアライゼーション<ul>
+<li>二人以上の場合このオプションを指定すると、分別ができる</li>
+</ul>
+</li>
+<li>データロギングを有効化するしない、のオプションがある<ul>
+<li>Googleにデータを機械学習のために再利用しない設定が可能</li>
+<li>精度は不明</li>
+<li>有効化すると、利用料金が割引</li>
+</ul>
+</li>
+<li>データロギングを利用して拡張モデルを作れる<ul>
+<li>NEXSに特化した学習モデルがつくれる</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Amazon<ul>
+<li>日本語対応はまだない(2020/02/28)</li>
+<li>8KHz and 16KHz<ul>
+<li>US English (en-US)</li>
+<li>US Spanish (es-US)</li>
+</ul>
+</li>
+<li>8KHz<ul>
+<li>Australian English (en-AU)</li>
+<li>British English (en-GB)</li>
+<li>French (fr-FR)</li>
+<li>Canadian French (fr-CA)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="gcloud-api-で音声ファルを文字変換"><a href="#gcloud-api-で音声ファルを文字変換" class="headerlink" title="gcloud api で音声ファルを文字変換"></a>gcloud api で音声ファルを文字変換</h2><ul>
+<li>音源ファイル入手</li>
+<li>mp3ならflacに変える必要<ul>
+<li>sox 41813155-44100-2-37c41ea41088e.mp3 –rate 16k –bits 16 –channels 1 41813155-44100-2-37c41ea41088e.flac</li>
+</ul>
+</li>
+<li>Google Storages にバケットを作って、アップする<ul>
+<li>gsutil mb gs://[BUCKET_NAME]/</li>
+</ul>
+</li>
+<li>flacファイルを作成したバケットへアップ<ul>
+<li>gsutil cp 41813155-44100-2-37c41ea41088e.flac gs://nzk-speech</li>
+</ul>
+</li>
+<li>アップしたflacファイルのアクセス権限をallUsers（読み込み）に変更<ul>
+<li>gsutil acl ch -u AllUsers:R gs://nzk-speech/41813155-44100-2-37c41ea41088e.flac</li>
+</ul>
+</li>
+<li>Google transition to speeach API に投げる<br>gcloud ml speech recognize-long-running ‘gs://nzk-speech/‘ <br>  –language-code=’ja-JP’ <br>  –sample-rate=16000 <br>  –encoding=flac <br>  –async</li>
+<li>経過を見る<br>gcloud ml speech operations describe</li>
+<li>結果を見る<br>gcloud ml speech operations wait</li>
+</ul>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ul>
+<li>オプションに気をつける<ul>
+<li>ファイル内のチャンネル数が複数なのに、APIのチャンネルオプションを「モノラル」と指定してエラーになる</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://makotoworld.github.io/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/" data-id="ck7nexydj00008uab0sde6ycx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/makotoworld.github.io/tags/idea/" rel="tag">idea</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/makotoworld.github.io/tags/my/" rel="tag">my</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AB%E3%82%88%E3%82%8B%E6%83%85%E5%A0%B1%E4%BF%9D%E9%9A%9C%E3%81%AE%E6%A4%9C%E8%A8%BC2019/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">音声文字変換による情報保障の検証2019</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/Competitive-programming/" rel="tag">Competitive programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/atcoder/" rel="tag">atcoder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/idea/" rel="tag">idea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/my/" rel="tag">my</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/python/" rel="tag">python</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/makotoworld.github.io/tags/Competitive-programming/" style="font-size: 10px;">Competitive programming</a> <a href="/makotoworld.github.io/tags/atcoder/" style="font-size: 10px;">atcoder</a> <a href="/makotoworld.github.io/tags/c/" style="font-size: 10px;">c++</a> <a href="/makotoworld.github.io/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/makotoworld.github.io/tags/idea/" style="font-size: 10px;">idea</a> <a href="/makotoworld.github.io/tags/life/" style="font-size: 10px;">life</a> <a href="/makotoworld.github.io/tags/my/" style="font-size: 20px;">my</a> <a href="/makotoworld.github.io/tags/python/" style="font-size: 10px;">python</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/makotoworld.github.io/archives/2020/03/">March 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/">音声文字変換の調査メモ</a>
+          </li>
+        
+          <li>
+            <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AB%E3%82%88%E3%82%8B%E6%83%85%E5%A0%B1%E4%BF%9D%E9%9A%9C%E3%81%AE%E6%A4%9C%E8%A8%BC2019/">音声文字変換による情報保障の検証2019</a>
+          </li>
+        
+          <li>
+            <a href="/makotoworld.github.io/2020/03/11/hexo-%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9/">hexo の書き方</a>
+          </li>
+        
+          <li>
+            <a href="/makotoworld.github.io/2020/03/08/%E7%AB%B6%E6%8A%80%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%82%92%E5%A7%8B%E3%82%81%E3%81%BE%E3%81%97%E3%81%9F/">競技プログラミングを始めました</a>
+          </li>
+        
+          <li>
+            <a href="/makotoworld.github.io/2020/03/07/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Makoto Nozaki<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/makotoworld.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/makotoworld.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/makotoworld.github.io/fancybox/jquery.fancybox.css">
+
+  
+<script src="/makotoworld.github.io/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/makotoworld.github.io/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
