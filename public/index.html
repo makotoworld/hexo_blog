@@ -67,6 +67,98 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-MicroSDでラズパイのOSを準備する" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/makotoworld.github.io/2020/03/30/MicroSD%E3%81%A7%E3%83%A9%E3%82%BA%E3%83%91%E3%82%A4%E3%81%AEOS%E3%82%92%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B/" class="article-date">
+  <time datetime="2020-03-30T00:37:29.000Z" itemprop="datePublished">2020-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/makotoworld.github.io/2020/03/30/MicroSD%E3%81%A7%E3%83%A9%E3%82%BA%E3%83%91%E3%82%A4%E3%81%AEOS%E3%82%92%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B/">MicroSDでラズパイのOSを準備する</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>毎回ググって調べたりしているので、ここで自分の環境に合わせた手順を書いてみた。</p>
+<ul>
+<li>macOS</li>
+<li>物理キーボード及びマウス、有線LANケーブルなし</li>
+<li>Wi-Fiあり、SDカード変換アダプターあり</li>
+<li>GUI(VNC)で操作したい</li>
+</ul>
+<h1 id="RaspberryPiのOSイメージを用意する"><a href="#RaspberryPiのOSイメージを用意する" class="headerlink" title="RaspberryPiのOSイメージを用意する"></a>RaspberryPiのOSイメージを用意する</h1><ul>
+<li><a href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="noopener">Download Raspbian for Raspberry Pi</a><br><img src="https://i.imgur.com/JWn2jnT.png" alt=""></li>
+</ul>
+<h1 id="microSDを初期化する"><a href="#microSDを初期化する" class="headerlink" title="microSDを初期化する"></a>microSDを初期化する</h1><ul>
+<li><a href="https://www.sdcard.org/downloads/formatter/" target="_blank" rel="noopener">SD Memory Card Formatter - SD Association</a><br><img src="https://i.imgur.com/U3wfO9L.png" alt=""><br><img src="https://i.imgur.com/4iGyQWD.png" alt=""></li>
+</ul>
+<h1 id="misroSDにOSイメージを書き出す"><a href="#misroSDにOSイメージを書き出す" class="headerlink" title="misroSDにOSイメージを書き出す"></a>misroSDにOSイメージを書き出す</h1><ul>
+<li><a href="https://www.balena.io/etcher/" target="_blank" rel="noopener">balenaEtcher - Flash OS images to SD cards &amp; USB drives</a><br><img src="https://i.imgur.com/ddQdWL9.png" alt=""></li>
+<li>ソフトを開いた時の画面。<br><img src="https://i.imgur.com/kaZZQXR.png" alt=""></li>
+<li>「＋」のところ、ダウンロードしたOSイメージ（ZIPファイル）を選択。</li>
+<li>準備ができたら、「Flash!」をクリックすると、microSDに書き出しが始まる。</li>
+<li>おおよそ20分くらいかかる。</li>
+</ul>
+<h1 id="SSHの設定を行う"><a href="#SSHの設定を行う" class="headerlink" title="SSHの設定を行う"></a>SSHの設定を行う</h1><ul>
+<li>ssh接続するためには、空の ssh ファイルを設置する。</li>
+<li>microSDをSDカード変換アダプターに入れて、macOS に読み込ませる。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;Volumes&#x2F;boot</span><br><span class="line">touch ssh</span><br></pre></td></tr></table></figure>
+
+<h1 id="Wi-Fiの設定を行う"><a href="#Wi-Fiの設定を行う" class="headerlink" title="Wi-Fiの設定を行う"></a>Wi-Fiの設定を行う</h1><ul>
+<li>Wi-Fi接続するためには、wpa_supplicant.conf を作成する。</li>
+<li>作っておくと自動的につながるようになる。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vi wpa_supplicant.conf</span><br><span class="line">wpa_supplicant.conf</span><br><span class="line">country&#x3D;JP</span><br><span class="line">ctrl_interface&#x3D;DIR&#x3D;&#x2F;var&#x2F;run&#x2F;wpa_supplicant GROUP&#x3D;netdev</span><br><span class="line">update_config&#x3D;1</span><br><span class="line">network&#x3D;&#123;</span><br><span class="line">    ssid&#x3D;&quot;abc&quot;</span><br><span class="line">    psk&#x3D;bac3cdf26d42c3a61fb858ef0295a0166e94f84dbabc1088bfa090cef3cb1dcb</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="SSH接続し、OSのアップデート"><a href="#SSH接続し、OSのアップデート" class="headerlink" title="SSH接続し、OSのアップデート"></a>SSH接続し、OSのアップデート</h1><ul>
+<li>raspberry pi を起動し、macOS のターミナルからSSH接続する</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi:~ $ ssh pi@raspberrypi.local</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>password は初期で、「raspberry」</li>
+<li><code>passwd</code> で変更できる。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi:~ $ passwd</span><br><span class="line">pi 用にパスワードを変更中</span><br><span class="line">Current password:</span><br><span class="line">新しいパスワード:</span><br><span class="line">新しいパスワードを再入力してください:</span><br><span class="line">passwd: パスワードは正しく更新されました</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ライブラリのアップデートを行う。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get upgrade</span><br><span class="line">sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure>
+
+<h1 id="VNC接続の設定を行う"><a href="#VNC接続の設定を行う" class="headerlink" title="VNC接続の設定を行う"></a>VNC接続の設定を行う</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install tightvncserver</span><br><span class="line">sudo apt-get install realvnc-vnc-server</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考URL"><a href="#参考URL" class="headerlink" title="参考URL"></a>参考URL</h1><ul>
+<li><a href="https://qiita.com/b-wind/items/d33f759ace01658bb09e#vnc%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B" target="_blank" rel="noopener">Raspberry Pi へのリモート接続 - Qiita</a></li>
+</ul>
+<h1 id="おすすめアイテム"><a href="#おすすめアイテム" class="headerlink" title="おすすめアイテム"></a>おすすめアイテム</h1><img border="0" src="http://ws.assoc-amazon.jp/widgets/q?_encoding=UTF8&ASIN=B081YD3VL5&Format=_SL300_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=makotoworld0a-22" width="150" style="float: left; margin: 0 20px 20px 0;" ><a href="http://www.amazon.co.jp/gp/product/B081YD3VL5/ref=as_li_qf_sp_asin_il?ie=UTF8&camp=247&creative=1211&creativeASIN=B081YD3VL5&linkCode=as2&tag=makotoworld0a-22" target="_blank">【国内正規代理店品】Raspberry Pi4 ModelB 4GB ラズベリーパイ4 技適対応品</a>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://makotoworld.github.io/makotoworld.github.io/2020/03/30/MicroSD%E3%81%A7%E3%83%A9%E3%82%BA%E3%83%91%E3%82%A4%E3%81%AEOS%E3%82%92%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B/" data-id="ck8dqxktm0000aoab77w1hmha" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/makotoworld.github.io/tags/raspberrypi/" rel="tag">raspberrypi</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-音声文字変換の調査メモ" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/" class="article-date">
@@ -463,7 +555,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/Competitive-programming/" rel="tag">Competitive programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/atcoder/" rel="tag">atcoder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/idea/" rel="tag">idea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/my/" rel="tag">my</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/python/" rel="tag">python</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/Competitive-programming/" rel="tag">Competitive programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/atcoder/" rel="tag">atcoder</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/c/" rel="tag">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/idea/" rel="tag">idea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/life/" rel="tag">life</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/my/" rel="tag">my</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/makotoworld.github.io/tags/raspberrypi/" rel="tag">raspberrypi</a></li></ul>
     </div>
   </div>
 
@@ -473,7 +565,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/makotoworld.github.io/tags/Competitive-programming/" style="font-size: 10px;">Competitive programming</a> <a href="/makotoworld.github.io/tags/atcoder/" style="font-size: 10px;">atcoder</a> <a href="/makotoworld.github.io/tags/c/" style="font-size: 10px;">c++</a> <a href="/makotoworld.github.io/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/makotoworld.github.io/tags/idea/" style="font-size: 10px;">idea</a> <a href="/makotoworld.github.io/tags/life/" style="font-size: 10px;">life</a> <a href="/makotoworld.github.io/tags/my/" style="font-size: 20px;">my</a> <a href="/makotoworld.github.io/tags/python/" style="font-size: 10px;">python</a>
+      <a href="/makotoworld.github.io/tags/Competitive-programming/" style="font-size: 10px;">Competitive programming</a> <a href="/makotoworld.github.io/tags/atcoder/" style="font-size: 10px;">atcoder</a> <a href="/makotoworld.github.io/tags/c/" style="font-size: 10px;">c++</a> <a href="/makotoworld.github.io/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/makotoworld.github.io/tags/idea/" style="font-size: 10px;">idea</a> <a href="/makotoworld.github.io/tags/life/" style="font-size: 10px;">life</a> <a href="/makotoworld.github.io/tags/my/" style="font-size: 20px;">my</a> <a href="/makotoworld.github.io/tags/python/" style="font-size: 10px;">python</a> <a href="/makotoworld.github.io/tags/raspberrypi/" style="font-size: 10px;">raspberrypi</a>
     </div>
   </div>
 
@@ -495,6 +587,10 @@
       <ul>
         
           <li>
+            <a href="/makotoworld.github.io/2020/03/30/MicroSD%E3%81%A7%E3%83%A9%E3%82%BA%E3%83%91%E3%82%A4%E3%81%AEOS%E3%82%92%E6%BA%96%E5%82%99%E3%81%99%E3%82%8B/">MicroSDでラズパイのOSを準備する</a>
+          </li>
+        
+          <li>
             <a href="/makotoworld.github.io/2020/03/11/%E9%9F%B3%E5%A3%B0%E6%96%87%E5%AD%97%E5%A4%89%E6%8F%9B%E3%81%AE%E8%AA%BF%E6%9F%BB%E3%83%A1%E3%83%A2/">音声文字変換の調査メモ</a>
           </li>
         
@@ -508,10 +604,6 @@
         
           <li>
             <a href="/makotoworld.github.io/2020/03/08/%E7%AB%B6%E6%8A%80%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%82%92%E5%A7%8B%E3%82%81%E3%81%BE%E3%81%97%E3%81%9F/">競技プログラミングを始めました</a>
-          </li>
-        
-          <li>
-            <a href="/makotoworld.github.io/2020/03/07/hello-world/">Hello World</a>
           </li>
         
       </ul>
